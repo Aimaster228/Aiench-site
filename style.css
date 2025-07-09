@@ -1,33 +1,34 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  padding: 20px;
-  background: #f5f6fa;
-  color: #2d3436;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
   text-align: center;
+  padding: 20px;
 }
+
 textarea {
-  width:90%;max-width:600px;height:150px;margin:10px auto;display:block;
-  font-family:monospace;font-size:14px;padding:10px;
+  width: 90%;
+  height: 120px;
+  background: #2e2e2e;
+  color: #fff;
+  border: none;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 14px;
 }
+
 button {
-  padding:10px 20px;font-size:16px;background:#0984e3;color:#fff;
-  border:none;border-radius:6px;margin-bottom:20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  background: #5b9dff;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin: 10px;
 }
-#analysisTable {
-  width:90%;max-width:600px;margin:20px auto;
-  text-align:left;
-  font-size:14px;
+
+.board {
+  width: 400px;
+  margin: auto;
+  border: 2px solid #444;
 }
-#analysisTable table {
-  width:100%;border-collapse:collapse;
-}
-#analysisTable th, td {
-  padding:8px;border:1px solid #ccc;
-}
-th {
-  background:#dfe6e9;
-}
-.best { background:#d4efdf; }
-.inaccuracy { background:#fcf3cf; }
-.mistake { background:#fadbd8; }
-.blunder { background:#f5b7b1; }
