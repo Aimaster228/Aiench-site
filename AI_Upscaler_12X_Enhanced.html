@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Photo Enhancer + 12X Upscaler</title>
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+        }
+        h1 {
+            color: #00eaff;
+            font-size: 2em;
+        }
+        input[type="file"] {
+            padding: 12px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #00eaff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 90%;
+            border-radius: 10px;
+        }
+        #output {
+            display: none;
+        }
+        #loading {
+            display: none;
+            margin-top: 20px;
+        }
+        #dog {
+            width: 100px;
+            margin: 20px auto;
+        }
+        #progress {
+            width: 80%;
+            background-color: #333;
+            border-radius: 10px;
+            margin: 0 auto;
+            height: 20px;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #00eaff;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Photo Enhancer & 12X Upscaler</h1>
+    <input type="file" id="imageUpload" accept="image/*"><br>
+    <button onclick="processImage()">Enhance + Upscale</button>
+
+    <div id="loading">
+        <p>Обработка изображения... Это займет около <strong>1–2 минут</strong></p>
+        <div id="progress"><div id="progress-bar"></div></div>
+        <img id="dog" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="Running Dog">
+    </div>
+
+    <div id="output">
+        <h2>Результат:</h2>
+        <img id="resultImage" src="">
+        <br>
+        <a id="downloadBtn" href="#" download="enhanced.png">
+            <button>Скачать изображение</button>
+        </a>
+    </div>
+
+    <script>
+        function simulateProgressBar(duration) {
+            const bar = document.getElementById("progress-bar");
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 1;
+                bar.style.width = width + "%";
+                if (width >= 100) clearInterval(interval);
+            }, duration / 100);
+        }
+
+        function processImage() {
+            const input = document.getElementById('imageUpload');
+            const file = input.files[0];
+            if (!file) return alert('Пожалуйста, загрузите изображение.');
+
+            document.getElementById('loading').style.display = 'block';
+            simulateProgressBar(90000); // ~90 сек
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                setTimeout(() => {
+                    const imageUrl = e.target.result;
+                    document.getElementById('resultImage').src = imageUrl;
+                    document.getElementById('downloadBtn').href = imageUrl;
+                    document.getElementById('output').style.display = 'block';
+                    document.getElementById('loading').style.display = 'none';
+                }, 90000); // Симулируем 1.5 минуты обработки
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
