@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Enhancer — by JosukeJ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      color: #f0f0f0;
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: brightness(0.6) blur(2px);
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 0.2em;
+    }
+
+    #imageUpload {
+      margin: 20px auto;
+      display: block;
+    }
+
+    #preview {
+      margin-top: 20px;
+    }
+
+    #processBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(270deg, #00eaff, #0099ff);
+      animation: glow 3s infinite;
+      color: #000;
+      cursor: pointer;
+    }
+
+    @keyframes glow {
+      0% { filter: brightness(1); }
+      50% { filter: brightness(1.6); }
+      100% { filter: brightness(1); }
+    }
+
+    select {
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    #result img {
+      max-width: 90%;
+      margin-top: 20px;
+    }
+
+    #progress {
+      margin-top: 20px;
+      color: lightgreen;
+      font-weight: bold;
+    }
+
+    #loadingDog {
+      display: none;
+      margin-top: 15px;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI Улучшение Фото</h1>
+  <p>Выбери фото и выбери режим</p>
+  <input type="file" id="imageUpload" accept="image/*" />
+  <select id="modeSelect">
+    <option value="enhance">ИИ улучшение</option>
+    <option value="quality">Повышение качества</option>
+    <option value="upscale">Апскейлинг 12X</option>
+    <option value="phenomenal">Феноменальное изменение</option>
+  </select>
+  <br>
+  <button id="processBtn" onclick="processImage()">Обработать</button>
+
+  <div id="progress"></div>
+  <img id="loadingDog" src="https://media.tenor.com/NqKNFHSmbssAAAAi/dog-running.gif" width="80" />
+
+  <div id="result"></div>
+  <footer>Created by JosukeJ</footer>
+
+  <script>
+    async function processImage() {
+      const fileInput = document.getElementById('imageUpload');
+      const mode = document.getElementById('modeSelect').value;
+      const file = fileInput.files[0];
+      const progress = document.getElementById('progress');
+      const dog = document.getElementById('loadingDog');
+      const result = document.getElementById('result');
+      result.innerHTML = "";
+      dog.style.display = "inline-block";
+      progress.innerText = "Загрузка изображения...";
+
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result.split(',')[1];
+        progress.innerText = "Обработка через ИИ...";
+        const response = await fetch("https://api.replicate.com/v1/predictions", {
+          method: "POST",
+          headers: {
+            Authorization: "Token r8_aROKay9wOpzjpteui7lg0hXQ95SXhjH1OKbSP",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            version: mode === "upscale"
+              ? "1bba2943b0cf42609152c6e13c1cf4d70a4be4c95f0a437882b3f9c3b3cfe335" // Real-ESRGAN
+              : "db21e45b78b48d6d1ab6fcf315c2e6f8265e3aa7e5ff9d9d9ceacc2d91b3f2c4", // GFPGAN
+            input: {
+              image: "data:image/jpeg;base64," + base64,
+              scale: mode === "upscale" ? 12 : 2,
+              face_enhance: mode === "phenomenal" ? true : false
+            }
+          })
+        });
+
+        const json = await response.json();
+        if (json.urls && json.urls.get) {
+          let status = "starting";
+          let output = "";
+          while (status !== "succeeded" && status !== "failed") {
+            const res = await fetch(json.urls.get, {
+              headers: {
+                Authorization: "Token r8_aROKay9wOpzjpteui7lg0hXQ95SXhjH1OKbSP"
+              }
+            });
+            const data = await res.json();
+            status = data.status;
+            if (data.output) output = data.output;
+            await new Promise(r => setTimeout(r, 1500));
+          }
+
+          dog.style.display = "none";
+          progress.innerText = "Готово!";
+          result.innerHTML = `<h3>Результат:</h3><img src="${output}" alt="Обработанное фото" />`;
+        } else {
+          dog.style.display = "none";
+          progress.innerText = "Ошибка при отправке на Replicate.";
+        }
+      };
+
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        alert("Выберите изображение");
+      }
+    }
+  </script>
+</body>
+</html>
