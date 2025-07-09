@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Photo Enhancer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600&display=swap');
+
+    body {
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: brightness(0.5) blur(2px);
+
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #f0f0f0;
+      font-family: 'Roboto Slab', serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #00eaff;
+      font-size: 2.4em;
+    }
+    input[type="file"], select, button {
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background-color: #00eaff;
+      color: #000;
+      cursor: pointer;
+    }
+    .image-section {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    img {
+      max-width: 300px;
+      border-radius: 10px;
+    }
+    #loading {
+      display: none;
+      margin-top: 20px;
+    }
+    #dog {
+      width: 80px;
+      margin-top: 15px;
+    }
+    #progress-bar-container {
+      width: 80%;
+      background-color: #444;
+      border-radius: 10px;
+      margin: 0 auto;
+      height: 20px;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background-color: #00eaff;
+      border-radius: 10px;
+    }
+    #language {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #333;
+      color: white;
+      border: 1px solid #666;
+    }
+  </style>
+</head>
+<body>
+  <select id="language" onchange="changeLanguage()">
+    <option value="ru">Русский</option>
+    <option value="en">English</option>
+  </select>
+
+  <h1 id="title">AI Улучшение Фото</h1>
+
+  <input type="file" id="imageUpload" accept="image/*"><br>
+
+  <select id="processingType">
+    <option value="enhance">ИИ Улучшение</option>
+    <option value="quality">Повышение качества</option>
+    <option value="upscale">Апскейлинг до 12X</option>
+    <option value="lux">Эффект камеры за $200</option>
+  </select><br>
+
+  <button onclick="processImage()" id="processBtn">Обработать</button>
+
+  <div id="loading">
+    <p id="loadingText">Обработка... Подождите ~1–2 минуты</p>
+    <div id="progress-bar-container">
+      <div id="progress-bar"></div>
+    </div>
+    <img id="dog" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif" alt="Щенок">
+  </div>
+
+  <div class="image-section" id="resultSection" style="display:none;">
+    <div>
+      <h3 id="beforeTitle">До</h3>
+      <img id="beforeImage" src="">
+    </div>
+    <div>
+      <h3 id="afterTitle">После</h3>
+      <img id="afterImage" src="">
+      <br>
+      <a id="downloadBtn" href="#" download="enhanced.png">
+        <button>Скачать</button>
+      </a>
+    </div>
+  </div>
+
+<script>
+  function simulateProgressBar(duration) {
+    const bar = document.getElementById("progress-bar");
+    let width = 0;
+    const interval = setInterval(() => {
+      width += 1;
+      bar.style.width = width + "%";
+      if (width >= 100) clearInterval(interval);
+    }, duration / 100);
+  }
+
+  function processImage() {
+    const file = document.getElementById('imageUpload').files[0];
+    if (!file) return alert('Загрузите фото.');
+
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('resultSection').style.display = 'none';
+    simulateProgressBar(80000);
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imageUrl = e.target.result;
+
+      setTimeout(() => {
+        document.getElementById('beforeImage').src = imageUrl;
+        document.getElementById('afterImage').src = imageUrl;
+        document.getElementById('downloadBtn').href = imageUrl;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('resultSection').style.display = 'flex';
+      }, 80000);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function changeLanguage() {
+    const lang = document.getElementById("language").value;
+    if (lang === "en") {
+      document.getElementById("title").innerText = "AI Photo Enhancer";
+      document.getElementById("processBtn").innerText = "Enhance";
+      document.getElementById("loadingText").innerText = "Processing... Please wait ~1–2 minutes";
+      document.getElementById("beforeTitle").innerText = "Before";
+      document.getElementById("afterTitle").innerText = "After";
+      document.getElementById("processingType").options[0].text = "AI Enhancement";
+      document.getElementById("processingType").options[1].text = "Quality Boost";
+      document.getElementById("processingType").options[2].text = "12X Upscale";
+      document.getElementById("processingType").options[3].text = "$200 Camera Look";
+    } else {
+      document.getElementById("title").innerText = "AI Улучшение Фото";
+      document.getElementById("processBtn").innerText = "Обработать";
+      document.getElementById("loadingText").innerText = "Обработка... Подождите ~1–2 минуты";
+      document.getElementById("beforeTitle").innerText = "До";
+      document.getElementById("afterTitle").innerText = "После";
+      document.getElementById("processingType").options[0].text = "ИИ Улучшение";
+      document.getElementById("processingType").options[1].text = "Повышение качества";
+      document.getElementById("processingType").options[2].text = "Апскейлинг до 12X";
+      document.getElementById("processingType").options[3].text = "Эффект камеры за $200";
+    }
+  }
+</script>
+</body>
+</html>
