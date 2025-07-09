@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Анализ шахматной партии</title>
+  <title>Chess‑Analyzer</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/chessboard-1.0.0.min.js"></script>
@@ -12,14 +12,14 @@
 <body>
   <h1>Анализ шахматной партии</h1>
 
-  <textarea id="pgnInput" placeholder="Вставьте сюда PGN..." spellcheck="false"></textarea>
-  <button onclick="loadPGN()">Загрузить</button>
+  <textarea id="pgnInput" placeholder="Вставьте сюда PGN..."></textarea>
+  <button onclick="loadPGN()">Анализировать PGN</button>
 
-  <div id="board" style="width: 90%; max-width: 350px; margin: 20px auto;"></div>
-
-  <div id="info"><p>Выберите ход для анализа.</p></div>
+  <div id="board" style="width:90%;max-width:350px;margin:20px auto;"></div>
 
   <canvas id="evalChart" width="400" height="200"></canvas>
+
+  <div id="analysisTable"></div>
 
   <script src="stockfish.js"></script>
   <script src="script.js"></script>
