@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Улучшение фотографии</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://images.unsplash.com/photo-1601758174625-b2c04ed0d98d?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: brightness(0.6);
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 0.3em;
+    }
+    #controls, #result, #downloadBtn {
+      transition: opacity 0.5s;
+    }
+    #processBtn, #downloadBtn {
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(270deg, #00eaff, #0099ff);
+      animation: glow 3s infinite;
+      color: #000;
+      cursor: pointer;
+      margin: 10px;
+    }
+    @keyframes glow {
+      0% { filter: brightness(1); }
+      50% { filter: brightness(1.6); }
+      100% { filter: brightness(1); }
+    }
+    #progress, #timeLeft {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #aaffaa;
+    }
+    #loaderCat {
+      display: none;
+      margin: 20px auto;
+    }
+    #beforeAfter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    #beforeAfter img {
+      max-width: 45%;
+      border: 2px solid white;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    select, input[type="file"] {
+      margin: 10px auto;
+      padding: 10px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Улучшение фотографии</h1>
+
+  <div id="controls">
+    <input type="file" id="imageUpload" accept="image/*" />
+    <select id="modeSelect">
+      <option value="enhance">ИИ улучшение (детализация, цвет)</option>
+      <option value="quality">Повышение качества (шумоподавление)</option>
+      <option value="upscale">Апскейлинг 12X (без потери)</option>
+      <option value="phenomenal">Феноменальное изменение (максимальный эффект)</option>
+    </select>
+    <button id="processBtn" onclick="processImage()">Обработать</button>
+  </div>
+
+  <div id="progress"></div>
+  <div id="timeLeft"></div>
+  <img id="loaderCat" src="https://media.tenor.com/yheo1GGu3FwAAAAC/cat-computer.gif" width="120" />
+
+  <div id="result"></div>
+  <div id="beforeAfter"></div>
+  <a id="downloadBtn" href="#" download="enhanced.jpg" style="display:none;">Скачать результат</a>
+
+  <footer>Created by JosukeJ</footer>
+
+  <script>
+    async function processImage() {
+      const controls = document.getElementById('controls');
+      const progress = document.getElementById('progress');
+      const timeLeft = document.getElementById('timeLeft');
+      const loader = document.getElementById('loaderCat');
+      const result = document.getElementById('result');
+      const beforeAfter = document.getElementById('beforeAfter');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const file = document.getElementById('imageUpload').files[0];
+      const mode = document.getElementById('modeSelect').value;
+
+      if (!file) return alert("Выберите изображение");
+
+      controls.style.opacity = 0;
+      loader.style.display = "block";
+      result.innerHTML = "";
+      beforeAfter.innerHTML = "";
+      downloadBtn.style.display = "none";
+      progress.textContent = "Обработка изображения...";
+      let time = 30;
+      const timer = setInterval(() => {
+        timeLeft.textContent = `Осталось примерно ${time--} секунд...`;
+        if (time < 0) clearInterval(timer);
+      }, 1000);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imgData = reader.result;
+        // Эмуляция обработки
+        setTimeout(() => {
+          loader.style.display = "none";
+          progress.textContent = "Готово!";
+          timeLeft.textContent = "";
+          result.innerHTML = '<h3>Результат:</h3>';
+          beforeAfter.innerHTML = `
+            <img src="${imgData}" alt="До" title="До обработки">
+            <img src="https://picsum.photos/600/400?random=1" alt="После" title="После обработки">
+          `;
+          downloadBtn.href = "https://picsum.photos/600/400?random=1";
+          downloadBtn.style.display = "inline-block";
+          setTimeout(() => {
+            controls.style.opacity = 1;
+          }, 15000);
+        }, 8000);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
