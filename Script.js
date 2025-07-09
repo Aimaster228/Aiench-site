@@ -1,27 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Chess Analysis</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div id="controls">
-    <textarea id="pgn-input" placeholder="Paste PGN here..."></textarea>
-    <button onclick="analyzePGN()">Анализировать PGN</button>
-    <select id="language">
-      <option value="en">English</option>
-      <option value="ru">Русский</option>
-    </select>
-  </div>
+let board, game;
 
-  <div id="board" class="board"></div>
-  <canvas id="evalChart" width="400" height="100"></canvas>
+function analyzePGN() {
+  const pgn = document.getElementById("pgn-input").value;
+  game = new Chess();
+  game.load_pgn(pgn);
 
-  <script src="libs/chess.js"></script>
-  <script src="libs/chessboard.js"></script>
-  <script src="libs/chart.js"></script>
-  <script src="stockfish.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+  board.position(game.fen());
+
+  const engine = new Worker("stockfish.js");
+  engine.postMessage("uci");
+  engine.postMessage("position fen " + game.fen());
+  engine.postMessage("go depth 10");
+
+  engine.onmessage = function(event) {
+    console.log("Stockfish says:", event.data);
+  };
+}
+
+window.onload = function() {
+  board = Chessboard('board', {
+    position: 'start',
+    pieceTheme: 'assets/pieces/{piece}.svg'
+  });
+};
